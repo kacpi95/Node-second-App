@@ -1,10 +1,11 @@
 const Jimp = require('jimp');
+const inquirer = require('inquirer');
 
 const addTextWatermarkToImage = async function (inputFile, outputFile, text) {
   const image = await Jimp.read(inputFile);
-  const font = await Jimp.loadFont(Jimp.FONT_SANS_32_WHITE);
+  const font = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
   const textData = {
-    text,
+    text: text,
     alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
     alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE,
   };
@@ -12,11 +13,6 @@ const addTextWatermarkToImage = async function (inputFile, outputFile, text) {
   await image.quality(100).writeAsync(outputFile);
 };
 
-addTextWatermarkToImage(
-  './test.jpg',
-  './test-with-watermark.jpg',
-  'Hello world'
-);
 const addImageWatermarkToImage = async function (
   inputFile,
   outputFile,
@@ -34,8 +30,8 @@ const addImageWatermarkToImage = async function (
   await image.quality(100).writeAsync(outputFile);
 };
 
-addImageWatermarkToImage(
-  './test.jpg',
-  './test-with-watermark2.jpg',
-  './logo.png'
-);
+function prepareOutputFilename(par) {
+  const conversion = par.split('.');
+
+  return `${conversion[0]}-with-watermark.${conversion[1]}`;
+}
