@@ -35,3 +35,65 @@ function prepareOutputFilename(par) {
 
   return `${conversion[0]}-with-watermark.${conversion[1]}`;
 }
+const startApp = async () => {
+  // Ask if user is ready
+  const answer = await inquirer.prompt([
+    {
+      name: 'start',
+      message:
+        'Hi! Welcome to "Watermark manager". Copy your image files to `/img` folder. Then you\'ll be able to use them in the app. Are you ready?',
+      type: 'confirm',
+    },
+  ]);
+
+  // if answer is no, just quit the app
+  if (!answer.start) process.exit();
+
+  // ask about input file and watermark type
+  const options = await inquirer.prompt([
+    {
+      name: 'inputImage',
+      type: 'input',
+      message: 'What file do you want to mark?',
+      default: 'test.jpg',
+    },
+    {
+      name: 'watermarkType',
+      type: 'list',
+      choices: ['Text watermark', 'Image watermark'],
+    },
+  ]);
+
+  if (options.watermarkType === 'Text watermark') {
+    const text = await inquirer.prompt([
+      {
+        name: 'value',
+        type: 'input',
+        message: 'Type your watermark text:',
+      },
+    ]);
+    options.watermarkText = text.value;
+    addTextWatermarkToImage(
+      './img/' + options.inputImage,
+      './img/' + prepareOutputFilename(options.inputImage),
+      options.watermarkText
+    );
+  } else {
+    const image = await inquirer.prompt([
+      {
+        name: 'filename',
+        type: 'input',
+        message: 'Type your watermark name:',
+        default: 'logo.png',
+      },
+    ]);
+    options.watermarkImage = image.filename;
+    addImageWatermarkToImage(
+      './img/' + options.inputImage,
+      './img/' + prepareOutputFilename(options.inputImage),
+      './img/' + options.watermarkImage
+    );
+  }
+};
+
+startApp();
